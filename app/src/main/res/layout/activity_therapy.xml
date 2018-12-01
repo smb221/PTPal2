@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:id="@+id/nestedScrollViewT"
+    android:background="@color/colorPrimaryDark"
+    android:padding="20dp"
+    tools:context="activities.PatientActivity">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutTherapist"
+            android:layout_width='match_parent'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditTextTherapist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_therapist"
+                android:textColorHint="@color/colorText"
+                android:inputType="text"
+                android:maxLines ="1"
+                android:textColor="@color/colorText">
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = " Exercise"
+            android:textSize="18sp"
+            android:layout_marginTop="40dp"
+            android:textColor="@color/colorText"
+            android:layout_gravity="left"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/exerciseSpinner"
+            android:layout_width='wrap_content'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_gravity="left">
+
+        </android.support.v7.widget.AppCompatSpinner>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutSD"
+            android:layout_width='match_parent'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditTextSD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_sd"
+                android:textColorHint="@color/colorText"
+                android:inputType="text"
+                android:maxLines ="1"
+                android:textColor="@color/colorText">
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutSPD"
+            android:layout_width='match_parent'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditTextSPD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_spd"
+                android:textColorHint="@color/colorText"
+                android:inputType="text"
+                android:maxLines ="1"
+                android:textColor="@color/colorText">
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutDPW"
+            android:layout_width='match_parent'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditTextDPW"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_dpw"
+                android:textColorHint="@color/colorText"
+                android:inputType="text"
+                android:maxLines ="1"
+                android:textColor="@color/colorText">
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayoutTW"
+            android:layout_width='match_parent'
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/textInputEditTextTW"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_tw"
+                android:textColorHint="@color/colorText"
+                android:inputType="text"
+                android:maxLines ="1"
+                android:textColor="@color/colorText">
+            </android.support.design.widget.TextInputEditText>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/appCompatButtonAddTherapy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/add_therapy"
+            android:textColor="@color/colorText">
+        </android.support.v7.widget.AppCompatButton>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/appCompatTextViewPatientLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="50dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="@string/back_to_profile"
+            android:textColor="@color/colorText">
+        </android.support.v7.widget.AppCompatTextView>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+</android.support.v4.widget.NestedScrollView>
