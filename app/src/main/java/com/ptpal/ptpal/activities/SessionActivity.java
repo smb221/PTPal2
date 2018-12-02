@@ -23,9 +23,9 @@ import java.util.Set;
 import java.util.UUID;
 import android.util.Log;
 
-public class SessionActivity {
-  
-  TextView myLabel;
+public class SessionActivity extends Activity
+{
+    TextView myLabel;
     EditText myTextbox;
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
@@ -46,6 +46,21 @@ public class SessionActivity {
     double heightcm = 0;
     double demispan = 0;
     TextView results;
+    Button calibrate;
+    int runs = 0;
+
+    //////  VALUES  /////
+    double accelX;
+    double accelY;
+    double accelZ;
+    double distance;
+    double realAccelMag;
+    double initAccelX;
+    double initAccelY;
+    double initAccelZ;
+    double initAccelMag;
+    double initDist;
+
 
 
     @Override
@@ -58,6 +73,8 @@ public class SessionActivity {
         genderFemale = (Button) findViewById(R.id.female);
         genderMale = (Button) findViewById(R.id.male);
         results = (TextView) findViewById(R.id.results);
+        calibrate = (Button) findViewById(R.id.calibrate);
+
 
 
         genderFemale.setOnClickListener(new View.OnClickListener()
@@ -79,6 +96,21 @@ public class SessionActivity {
                 gender = 1;
                 String temp = height.getText().toString();
                 heightcm = Double.parseDouble(temp);
+            }
+        });
+
+        calibrate.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if(runs == 1)
+                {
+                    gender = 1;
+                    String temp = height.getText().toString();
+                    heightcm = Double.parseDouble(temp);
+                }
+
             }
         });
 
@@ -215,19 +247,35 @@ public class SessionActivity {
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
-                                    Log.i("logging", data + "");
+                                    //Log.i("logging", data + "");
                                     handler.post(new Runnable()
                                     {
                                         public void run()
                                         {
-                                            if(test < 8)
+                                            runs = 1;
+                                            if(test < 30)
                                             {
                                                 out = out + data + "\n";
                                                 test++;
-                                                if(test == 8)
+                                                if(test == 10)
                                                 {
                                                     read3Message.setText(out);
                                                     //Log.d("myTag", out);
+
+                                                    String values[] = out.split(":");
+
+                                                    accelX = Double.parseDouble(values[0]);
+                                                    accelY = Double.parseDouble(values[1]);
+                                                    accelZ = Double.parseDouble(values[2]);
+                                                    distance = Double.parseDouble(values[3]);
+                                                    realAccelMag = Double.parseDouble(values[4]);
+                                                    initAccelX = Double.parseDouble(values[5]);
+                                                    initAccelY = Double.parseDouble(values[6]);
+                                                    initAccelZ = Double.parseDouble(values[7]);
+                                                    initAccelMag = Double.parseDouble(values[8]);
+                                                    initDist = Double.parseDouble(values[9]);
+                                                    
+
                                                     test = 0;
                                                     out = "";
                                                     if(heightcm > 0)
