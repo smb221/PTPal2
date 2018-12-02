@@ -1,5 +1,9 @@
 package com.ptpal.ptpal.activities;
 
+import android.annotation.TargetApi;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.*;
@@ -12,6 +16,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.EditText;
@@ -23,144 +29,173 @@ import java.util.Set;
 import java.util.UUID;
 import android.util.Log;
 
-public class SessionActivity extends Activity
+import com.ptpal.ptpal.R;
+import com.ptpal.ptpal.model.Patient;
+import com.ptpal.ptpal.model.Therapy;
+import com.ptpal.ptpal.sql.PTPalDB;
+
+import static android.icu.lang.UCharacter.toUpperCase;
+
+public class SessionActivity extends AppCompatActivity implements View.OnClickListener
 {
-    TextView myLabel;
-    EditText myTextbox;
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mmSocket;
-    BluetoothDevice mmDevice;
-    OutputStream mmOutputStream;
-    InputStream mmInputStream;
+    private final AppCompatActivity activity = SessionActivity.this;
+
+    private NestedScrollView nestedScrollViewS;
+
+    private TextView textViewExerciseName;
+    private TextView textViewDuration;
+    private TextView textViewAccelX;
+    private TextView textViewAccelY;
+    private TextView textViewAccelZ;
+    private TextView textViewDistance;
+    private TextView textViewMagnitude;
+    private TextView textViewSessionOverExtensions;
+    private TextView textViewSessionOverExertions;
+    private TextView textViewSessionPronations;
+
+    private AppCompatButton appCompatButtonStart;
+    private AppCompatButton appCompatButtonEnd;
+
+    private AppCompatTextView appCompatTextViewSessToPat;
+
+    private String patEmail;
+    private String patExercise;
+
+    private PTPalDB myDB;
+
+    private Therapy therapy;
+    private Patient patient;
+
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothDevice mmDevice;
+    private BluetoothSocket mmSocket;
+    private OutputStream mmOutputStream;
+    private InputStream mmInputStream;
     volatile boolean stopWorker;
-    TextView read3Message;
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
-    int test;
-    String out;
-    EditText height;
-    Button genderFemale;
-    Button genderMale;
-    int gender;
-    double heightcm = 0;
-    double demispan = 0;
-    TextView results;
-    Button calibrate;
-    int runs = 0;
+    private Thread workerThread;
+    private  byte[] readBuffer;
+    private int readBufferPosition;
+    private int test;
+    private String out;
+    private int runs;
 
-    //////  VALUES  /////
-    double accelX;
-    double accelY;
-    double accelZ;
-    double distance;
-    double realAccelMag;
-    double initAccelX;
-    double initAccelY;
-    double initAccelZ;
-    double initAccelMag;
-    double initDist;
+    private double accelX;
+    private double accelY;
+    private double accelZ;
+    private double distance;
+    private double realAccelMag;
+    private double initAccelX;
+    private double initAccelY;
+    private double initAccelZ;
+    private double initAccelMag;
+    private double initDist;
+    private double demispan;
+    private int overExtensions;
+    private int overExertions;
+    private int pronations;
 
 
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_session);
+        getSupportActionBar().hide();
 
-        height = (EditText)findViewById(R.id.userHeight);
-        genderFemale = (Button) findViewById(R.id.female);
-        genderMale = (Button) findViewById(R.id.male);
-        results = (TextView) findViewById(R.id.results);
-        calibrate = (Button) findViewById(R.id.calibrate);
+        patEmail = getIntent().getExtras().getString("EMAIL");
+        patExercise = getIntent().getExtras().getString("EXERCISE");
 
+        initObjects();
+        initViews();
+        initListeners();
 
+        patient = myDB.getPatient(patEmail);
 
-        genderFemale.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                gender = 0;
-                String temp = height.getText().toString();
-                heightcm = Double.parseDouble(temp);
-            }
-        });
-
-        genderMale.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                gender = 1;
-                String temp = height.getText().toString();
-                heightcm = Double.parseDouble(temp);
-            }
-        });
-
-        calibrate.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(runs == 1)
-                {
-                    gender = 1;
-                    String temp = height.getText().toString();
-                    heightcm = Double.parseDouble(temp);
-                }
-
-            }
-        });
-
-        Button openButton = (Button)findViewById(R.id.open);
-        Button sendButton = (Button)findViewById(R.id.send);
-        Button closeButton = (Button)findViewById(R.id.close);
-        myLabel = (TextView)findViewById(R.id.label);
-        myTextbox = (EditText)findViewById(R.id.entry);
-        read3Message = (TextView) findViewById(R.id.textHere);
-        test = 0;
-        out = "";
-
-
-        //Open Button
-        openButton.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                try
-                {
-                    findBT();
-                    openBT();
-                }
-                catch (IOException ex)
-                {
-
-                }
-            }
-        });
-
-        //Close button
-        closeButton.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
-                try
-                {
-                    closeBT();
-                }
-                catch (IOException ex) { }
-            }
-        });
+        therapy = myDB.getSelectedTherapy(patEmail, patExercise);
     }
 
-    void findBT()
+    private void initObjects()
+    {
+        myDB = new PTPalDB(activity);
+        patient = myDB.getPatient(patEmail);
+        therapy = myDB.getSelectedTherapy(patEmail, patExercise);
+    }
+
+    private void initViews()
+    {
+        nestedScrollViewS = (NestedScrollView) findViewById(R.id.nestedScrollViewS);
+
+        textViewExerciseName = (TextView) findViewById(R.id.textViewExerciseName);
+        textViewExerciseName.setText(therapy.getExercise());
+
+        textViewDuration = (TextView) findViewById(R.id.textViewDuration);
+        textViewDuration.setText(String.valueOf(therapy.getSessionDuration()) + " Seconds");
+
+        textViewAccelX = (TextView) findViewById(R.id.textViewAccelX);
+        textViewAccelX.setVisibility(View.GONE);
+
+        textViewAccelY = (TextView) findViewById(R.id.textViewAccelY);
+        textViewAccelY.setVisibility(View.GONE);
+
+        textViewAccelZ = (TextView) findViewById(R.id.textViewAccelZ);
+        textViewAccelZ.setVisibility(View.GONE);
+
+        textViewDistance = (TextView) findViewById(R.id.textViewDistance);
+        textViewDistance.setVisibility(View.GONE);
+
+        textViewMagnitude = (TextView) findViewById(R.id.textViewMagnitude);
+        textViewMagnitude.setVisibility(View.GONE);
+
+        textViewSessionOverExtensions = (TextView) findViewById(R.id.textViewSessionOverExtensions);
+        textViewSessionOverExtensions.setVisibility(View.GONE);
+
+        textViewSessionOverExertions = (TextView) findViewById(R.id.textViewSessionOverExertions);
+        textViewSessionOverExertions.setVisibility(View.GONE);
+
+        textViewSessionPronations = (TextView) findViewById(R.id.textViewSessionPronations);
+        textViewSessionPronations.setVisibility(View.GONE);
+
+        appCompatButtonStart = (AppCompatButton) findViewById(R.id.appCompatButtonStart);
+        appCompatButtonEnd = (AppCompatButton) findViewById(R.id.appCompatButtonEnd);
+
+        appCompatTextViewSessToPat = (AppCompatTextView) findViewById(R.id.appCompatTextViewSessToPat);
+    }
+    private void initListeners(){
+        appCompatButtonStart.setOnClickListener(this);
+        appCompatButtonEnd.setOnClickListener(this);
+        appCompatTextViewSessToPat.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.appCompatButtonStart:
+                findBT();
+                try {
+                    openBT();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.appCompatButtonEnd:
+                endConnection();
+                break;
+            case R.id.appCompatTextViewSessToPat:
+                finish();
+                break;
+        }
+    }
+
+    public void findBT()
     {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null)
         {
-            myLabel.setText("No bluetooth adapter available");
+            Snackbar.make(nestedScrollViewS, getString(R.string.failed_find_bt), Snackbar.LENGTH_LONG).show();
         }
 
         if(!mBluetoothAdapter.isEnabled())
@@ -181,7 +216,7 @@ public class SessionActivity extends Activity
                 }
             }
         }
-        myLabel.setText("Bluetooth Device Found");
+        Snackbar.make(nestedScrollViewS, getString(R.string.success_find_bt), Snackbar.LENGTH_LONG).show();
     }
 
     void openBT() throws IOException
@@ -194,31 +229,11 @@ public class SessionActivity extends Activity
 
         beginListenForData();
 
-        myLabel.setText("Bluetooth Opened");
+        Snackbar.make(nestedScrollViewS, getString(R.string.open_bt), Snackbar.LENGTH_LONG).show();
     }
 
     void beginListenForData()
     {
-//        new Handler(Looper.getMainLooper()).post(new Runnable(){
-//            byte[] buffer = new byte[1024];
-//            int bytes;
-//            String readMessage = "hello";
-//            @Override
-//            public void run()
-//            {
-//                while (true) {
-//                    try {
-//                        bytes = mmInputStream.read(buffer);            //read bytes from input buffer
-//                        readMessage = new String(buffer, 0, bytes);
-//                        // Send the obtained bytes to the UI Activity via handler
-//                        Log.i("logging", readMessage + "");
-//                        read3Message.setText(readMessage);
-//                    } catch (IOException e) {
-//                        break;
-//                    }
-//                }
-//            }
-//        });
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
@@ -259,7 +274,6 @@ public class SessionActivity extends Activity
                                                 test++;
                                                 if(test == 10)
                                                 {
-                                                    read3Message.setText(out);
                                                     //Log.d("myTag", out);
 
                                                     String values[] = out.split(":");
@@ -274,21 +288,30 @@ public class SessionActivity extends Activity
                                                     initAccelZ = Double.parseDouble(values[7]);
                                                     initAccelMag = Double.parseDouble(values[8]);
                                                     initDist = Double.parseDouble(values[9]);
-                                                    
+
+                                                    textViewAccelX.setVisibility(View.VISIBLE);
+                                                    textViewAccelX.setText("X Acceleration: " + String.valueOf(accelX));
+                                                    textViewAccelY.setVisibility(View.VISIBLE);
+                                                    textViewAccelY.setText("Y Acceleration: " + String.valueOf(accelY));
+                                                    textViewAccelZ.setVisibility(View.VISIBLE);
+                                                    textViewAccelZ.setText("Z Acceleration: " + String.valueOf(accelZ));
+                                                    textViewDistance.setVisibility(View.VISIBLE);
+                                                    textViewDistance.setText("Distane: " + String.valueOf(distance));
+                                                    textViewMagnitude.setVisibility(View.VISIBLE);
+                                                    textViewAccelX.setText("Magnitude: " + String.valueOf(realAccelMag));
 
                                                     test = 0;
                                                     out = "";
-                                                    if(heightcm > 0)
+                                                    if(patient.getHeight() > 0)
                                                     {
-                                                        if(gender == 0)
+                                                        if(patient.getGender().equals("M"))
                                                         {
-                                                            demispan = (heightcm - 60.1) / 1.35;
+                                                          
                                                         }
-                                                        if(gender == 1)
+                                                        else if(patient.getGender().equals("F"))
                                                         {
-                                                            demispan = (heightcm - 57.8) / 1.40;
+                                                         
                                                         }
-                                                        results.setText(Double.toString(demispan));
                                                     }
                                                 }
                                             }
@@ -311,14 +334,5 @@ public class SessionActivity extends Activity
         });
 
         workerThread.start();
-    }
-
-    void closeBT() throws IOException
-    {
-        stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
-        myLabel.setText("Bluetooth Closed");
     }
 }
