@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -46,6 +47,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
     private TextView textViewTW;
 
     private AppCompatButton appCompatButtonChangeExercise;
+    private AppCompatButton appCompatButtonStartSession;
     private AppCompatButton appCompatButtonTherapyHistory;
     private AppCompatButton appCompatButtonConfirmExercise;
 
@@ -92,18 +94,25 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         textViewEmail.setText(patient.getEmail());
 
         textViewTherapist = (TextView) findViewById(R.id.textViewTherapist);
+        textViewTherapist.setVisibility(View.GONE);
 
         textViewExercise = (TextView) findViewById(R.id.textViewExercise);
+        textViewExercise.setVisibility(View.GONE);
 
         textViewSD = (TextView) findViewById(R.id.textViewSD);
+        textViewSD.setVisibility(View.GONE);
 
         textViewSPD = (TextView) findViewById(R.id.textViewSPD);
+        textViewSPD.setVisibility(View.GONE);
 
         textViewDPW = (TextView) findViewById(R.id.textViewDPW);
+        textViewDPW.setVisibility(View.GONE);
 
         textViewTW = (TextView) findViewById(R.id.textViewTW);
+        textViewTW.setVisibility(View.GONE);
 
         appCompatButtonChangeExercise = (AppCompatButton) findViewById(R.id.appCompatButtonChangeExercise);
+        appCompatButtonStartSession = (AppCompatButton) findViewById(R.id.appCompatButtonStartSession);
         appCompatButtonTherapyHistory = (AppCompatButton) findViewById(R.id.appCompatButtonTherapyHistory);
 
         circleImageView = (CircleImageView) findViewById(R.id.circleImageView);
@@ -119,6 +128,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
     }
     private void initListeners(){
         appCompatButtonChangeExercise.setOnClickListener(this);
+        appCompatButtonStartSession.setOnClickListener(this);
         textViewLinkLogout.setOnClickListener(this);
         textViewLinkEditProfile.setOnClickListener(this);
         textViewLinkCreateTherapy.setOnClickListener(this);
@@ -130,7 +140,14 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         switch(v.getId())
         {
             case R.id.appCompatButtonChangeExercise:
-                exercisePopup();
+                String[] exercises = myDB.getPatientTherapies(patEmail);
+                if(exercises[0] == null)
+                {
+                    Snackbar.make(nestedScrollViewP, getString(R.string.first_create_therapy), Snackbar.LENGTH_LONG).show();
+                }
+                else {
+                    exercisePopup(exercises);
+                }
                 break;
             case R.id.textViewLinkCreateTherapy:
                 Intent intentTherapy = new Intent(getApplicationContext(), TherapyActivity.class);
@@ -145,6 +162,21 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.textViewLinkLogout:
                 Intent intentLogin = new Intent(activity, LoginActivity.class);
                 startActivity(intentLogin);
+                break;
+            case R.id.appCompatButtonStartSession:
+                if(therapy == null )
+                {
+                    Snackbar.make(nestedScrollViewP, getString(R.string.select_exercise_first), Snackbar.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Intent intentSession = new Intent(getApplicationContext(), SessionActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("EMAIL", patient.getEmail());
+                    extras.putString("EXERCISE", therapy.getExercise());
+                    intentSession.putExtras(extras);
+                    startActivity(intentSession);
+                }
                 break;
         }
     }
@@ -165,15 +197,14 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public void exercisePopup()
+    public void exercisePopup(String[] e)
     {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.activity_popup, null);
         boolean focusable = true;
         final PopupWindow popupWindow = new PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, focusable);
 
-        String[] exercises = myDB.getPatientTherapies(patEmail);
-        ArrayList<String> exer = new ArrayList<String>(Arrays.asList(exercises));
+        ArrayList<String> exer = new ArrayList<String>(Arrays.asList(e));
         appCompatButtonConfirmExercise = (AppCompatButton)popupView.findViewById(R.id.appCompatButtonConfirmExercise);
         Spinner mySpinner;
         mySpinner = (Spinner)popupView.findViewById(R.id.exercisePopupSpinner);
@@ -199,11 +230,23 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
    public void displayTherapy()
    {
        therapy = myDB.getSelectedTherapy(patEmail, skySpinner.getSelectedItem().toString());
+
+       textViewTherapist.setVisibility(View.VISIBLE);
        textViewTherapist.setText("Therapist: \n" + String.valueOf(therapy.getTherapistEmail()));
+
+       textViewExercise.setVisibility(View.VISIBLE);
        textViewExercise.setText("Exercise: \n" + String.valueOf(therapy.getExercise()));
+
+       textViewSD.setVisibility(View.VISIBLE);
        textViewSD.setText("Session Duration: " + String.valueOf(therapy.getSessionDuration()));
+
+       textViewSPD.setVisibility(View.VISIBLE);
        textViewSPD.setText("Sessions Per Day: " + String.valueOf(therapy.getSessionsPerDay()));
+
+       textViewDPW.setVisibility(View.VISIBLE);
        textViewDPW.setText("Days Per Week: " + String.valueOf(therapy.getDaysPerWeek()));
+
+       textViewTW.setVisibility(View.VISIBLE);
        textViewTW.setText("Total Weeks: " + String.valueOf(therapy.getTotalWeeks()));
    }
    public static Bitmap getImage(byte[] image) {

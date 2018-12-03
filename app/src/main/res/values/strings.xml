@@ -42,6 +42,17 @@
     <string name="update_picture">Update Profile Picture</string>
     <string name="success_pic">Profile picture saved successfully!</string>
     <string name="fail_pic">Failed to save picture; Please try again!</string>
+    <string name="text_start">Start Therapy</string>
+    <string name="text_end">End Therapy</string>
+    <string name="session_details">Session Details:</string>
+    <string name="form_failures">Form Failures:</string>
+    <string name="failed_find_bt">No BT adapter available</string>
+    <string name="success_find_bt">Bluetooth Device Found</string>
+    <string name="open_bt">Bluetooth Opened</string>
+    <string name="hint_age">Age</string>
+    <string name="close_bt">BT Connection Closed</string>
+    <string name="select_exercise_first">You must select an exercise before you can start a session!</string>
+    <string name="first_create_therapy">You must add therapy before you can select an exercise!</string>
     <string-array name = "exercises">
         <item>Vertical Arm Extension</item>
         <item>Horizontal Arm Extension</item>

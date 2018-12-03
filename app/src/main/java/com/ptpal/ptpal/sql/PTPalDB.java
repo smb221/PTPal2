@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.ptpal.ptpal.model.Patient;
 import com.ptpal.ptpal.model.ProfilePicture;
+import com.ptpal.ptpal.model.Session;
 import com.ptpal.ptpal.model.Therapy;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class PTPalDB extends SQLiteOpenHelper
     public static final String PATIENT_EMAIL = "Email";
     public static final String PATIENT_PASSWORD = "Password";
     public static final String PATIENT_HEIGHT = "Height";
+    public static final String PATIENT_AGE = "Age";
     public static final String PATIENT_GENDER = "Gender";
 
     public static final String TBL_THERAPIST = "Therapist";
@@ -56,12 +58,12 @@ public class PTPalDB extends SQLiteOpenHelper
 
     public static final String TBL_SESSION = "Session";
     public static final String SESSION_ID = "Session_ID";
-    public static final String SESSION_PATIENT_ID = "Patient_ID";
-    public static final String SESSION_EXERCISE_ID = "Exercise_ID";
+    public static final String SESSION_PATIENT_EMAIL = "Patient_ID";
+    public static final String SESSION_EXERCISE = "Exercise";
     public static final String SESSION_DURATION = "Duration";
     public static final String SESSION_OEXTENTIONS = "Over_Extensions";
     public static final String SESSION_OEXERTIONS = "Over_Exertions";
-    public static final String SESSION_FF = "Form_Failures";
+    public static final String SESSION_PRONATIONS = "Pronations";
     public static final String SESSION_DATE = "Session_Date";
 
     public static final String TBL_EXERCISES = "Exercises";
@@ -80,7 +82,7 @@ public class PTPalDB extends SQLiteOpenHelper
 
     public PTPalDB(Context context)
     {
-        super(context, DATABASE_NAME, null, 5);
+        super(context, DATABASE_NAME, null, 8);
         this.db = db;
     }
 
@@ -94,6 +96,7 @@ public class PTPalDB extends SQLiteOpenHelper
                 PATIENT_EMAIL + " TEXT UNIQUE," +
                 PATIENT_PASSWORD + " TEXT," +
                 PATIENT_HEIGHT + " INTEGER," +
+                PATIENT_AGE + " INTEGER," +
                 PATIENT_GENDER + " TEXT);");
 
         db.execSQL("create table " + TBL_THERAPIST + " (" +
@@ -123,19 +126,19 @@ public class PTPalDB extends SQLiteOpenHelper
                 THERAPY_THERAPIST_EMAIL + " String," +
                 THERAPY_PATIENT_EMAIL + " String," +
                 THERAPY_EXERCISE + " String UNIQUE," +
-                THERAPY_DURATION + " INTEGER," +
+                THERAPY_DURATION + " DOUBLE," +
                 THERAPY_SPD + " INTEGER," +
                 THERAPY_DPW + " INTEGER," +
                 THERAPY_TW + " INTEGER);");
 
         db.execSQL("create table " + TBL_SESSION + " (" +
                 SESSION_ID + " INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT," +
-                SESSION_PATIENT_ID + " INTEGER," +
-                SESSION_EXERCISE_ID + " INTEGER," +
-                SESSION_DURATION + " INTEGER," +
+                SESSION_PATIENT_EMAIL + " TEXT," +
+                SESSION_EXERCISE + " TEXT," +
+                SESSION_DURATION + " DOUBLE," +
                 SESSION_OEXTENTIONS + " TEXT," +
                 SESSION_OEXERTIONS + " INTEGER," +
-                SESSION_FF + " INTEGER," +
+                SESSION_PRONATIONS + " INTEGER," +
                 SESSION_DATE + " TEXT);");
 
         db.execSQL("create table " + TBL_PP + " (" +
@@ -167,6 +170,7 @@ public class PTPalDB extends SQLiteOpenHelper
         values.put(PATIENT_GENDER, patient.getGender());
         values.put(PATIENT_PASSWORD, patient.getPassword());
         values.put(PATIENT_HEIGHT, patient.getHeight());
+        values.put(PATIENT_AGE, patient.getHeight());
         long result = db.insert(TBL_PATIENT, null, values);
         if(result == -1)
         {
@@ -223,17 +227,16 @@ public class PTPalDB extends SQLiteOpenHelper
         }
     }
 
-    public boolean insertSession(int patientID, int exerciseID, int duration, int ff , int oexert, int oexten, String ed, String CreatedDate)
-    {
+    public boolean insertSession(Session session){
         db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(SESSION_PATIENT_ID, patientID);
-        values.put(SESSION_EXERCISE_ID, exerciseID);
-        values.put(SESSION_DURATION, exerciseID);
-        values.put(SESSION_FF, duration);
-        values.put(SESSION_OEXERTIONS, oexert);
-        values.put(SESSION_OEXTENTIONS, oexten);
-        values.put(SESSION_DATE, CreatedDate);
+        values.put(SESSION_PATIENT_EMAIL, session.getPatientEmail());
+        values.put(SESSION_EXERCISE, session.getExercise());
+        values.put(SESSION_DURATION, session.getDuration());
+        values.put(SESSION_PRONATIONS, session.getPronations());
+        values.put(SESSION_OEXERTIONS, session.getOverExertions());
+        values.put(SESSION_OEXTENTIONS, session.getOverExtentions());
+        values.put(SESSION_DATE, session.getCreatedDate());
         long result = db.insert(TBL_SESSION, null, values);
         if(result == -1)
         {
@@ -352,6 +355,7 @@ public class PTPalDB extends SQLiteOpenHelper
                 p.setEmail(email);
                 p.setGender(cursor.getString(cursor.getColumnIndex("Gender")));
                 p.setHeight(cursor.getInt(cursor.getColumnIndex("Height")));
+                p.setAge(cursor.getInt(cursor.getColumnIndex("Age")));
                 p.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
             }
         }
@@ -409,6 +413,7 @@ public class PTPalDB extends SQLiteOpenHelper
             values.put(PATIENT_LN, patient.getLastName());
             values.put(PATIENT_GENDER, patient.getGender());
             values.put(PATIENT_HEIGHT, patient.getHeight());
+            values.put(PATIENT_AGE, patient.getAge());
 
             String where = "Email=?";
             String[] argument = new String[]{patient.getEmail()};

@@ -27,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputLayout textInputLayoutEmailR;
     private TextInputLayout textInputLayoutGender;
     private TextInputLayout textInputLayoutHeight;
+    private TextInputLayout textInputLayoutAge;
     private TextInputLayout textInputLayoutPasswordR;
     private TextInputLayout textInputLayoutConfirmPassword;
 
@@ -35,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputEditText textInputEditTextEmailR;
     private TextInputEditText textInputEditTextGender;
     private TextInputEditText textInputEditTextHeight;
+    private TextInputEditText textInputEditTextAge;
     private TextInputEditText textInputEditTextPasswordR;
     private TextInputEditText textInputEditTextConfirmPassword;
 
@@ -65,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         textInputLayoutEmailR = (TextInputLayout) findViewById(R.id.textInputLayoutEmailR);
         textInputLayoutGender = (TextInputLayout) findViewById(R.id.textInputLayoutGender);
         textInputLayoutHeight = (TextInputLayout) findViewById(R.id.textInputLayoutHeight);
+        textInputLayoutAge = (TextInputLayout) findViewById(R.id.textInputLayoutAge);
         textInputLayoutPasswordR = (TextInputLayout) findViewById(R.id.textInputLayoutPasswordR);
         textInputLayoutConfirmPassword = (TextInputLayout) findViewById(R.id.textInputLayoutConfirmPassword);
 
@@ -73,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         textInputEditTextEmailR = (TextInputEditText) findViewById(R.id.textInputEditTextEmailR);
         textInputEditTextGender = (TextInputEditText) findViewById(R.id.textInputEditTextGender);
         textInputEditTextHeight = (TextInputEditText) findViewById(R.id.textInputEditTextHeight);
+        textInputEditTextAge = (TextInputEditText) findViewById(R.id.textInputEditTextAge);
         textInputEditTextPasswordR = (TextInputEditText) findViewById(R.id.textInputEditTextPasswordR);
         textInputEditTextConfirmPassword = (TextInputEditText) findViewById(R.id.textInputEditTextConfirmPassword);
 
@@ -129,6 +133,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         {
             return;
         }
+        if(!inputValidation.isInputEditTextFilled(textInputEditTextAge, textInputLayoutAge, getString(R.string.error_message)))
+        {
+            return;
+        }
         if(!inputValidation.isInputEditTextEmail(textInputEditTextEmailR, textInputLayoutEmailR, getString(R.string.error_message_email)))
         {
             return;
@@ -155,6 +163,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
            int height = Integer.parseInt(textInputEditTextHeight.getText().toString().trim());
            patient.setHeight(height);
+
+           int age = Integer.parseInt(textInputEditTextAge.getText().toString().trim());
+           patient.setAge(age);
            patient.setPassword(textInputEditTextPasswordR.getText().toString().trim());
 
            PTPalDB.insertPatient(patient);

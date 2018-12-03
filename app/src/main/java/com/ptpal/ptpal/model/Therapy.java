@@ -7,7 +7,7 @@ public class Therapy
     private String patientEmail;
     private String exercise;
     private int sessionsPerDay;
-    private int sessionDuration;
+    private double sessionDuration;
     private int daysPerWeek;
     private int totalWeeks;
 
@@ -56,11 +56,11 @@ public class Therapy
         this.sessionsPerDay = sessionsPerDay;
     }
 
-    public int getSessionDuration() {
+    public double getSessionDuration() {
         return sessionDuration;
     }
 
-    public void setSessionDuration(int sessionDuration)
+    public void setSessionDuration(double sessionDuration)
     {
         this.sessionDuration = sessionDuration;
     }

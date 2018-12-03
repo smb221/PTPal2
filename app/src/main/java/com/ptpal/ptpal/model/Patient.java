@@ -7,6 +7,7 @@ public class Patient
     private String lastName;
     private String email;
     private int height;
+    private int age;
     private String gender;
     private String password;
 
@@ -44,6 +45,15 @@ public class Patient
     public void setHeight(int height)
     {
         this.height = height;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age)
+    {
+        this.age = age;
     }
 
     public String getGender() {

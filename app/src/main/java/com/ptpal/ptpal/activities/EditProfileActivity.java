@@ -38,12 +38,15 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     private TextInputLayout textInputLayoutEmailE;
     private TextInputLayout textInputLayoutGenderE;
     private TextInputLayout textInputLayoutHeightE;
+    private TextInputLayout textInputLayoutAgeE;
 
     private TextInputEditText textInputEditTextFirstNameE;
     private TextInputEditText textInputEditTextLastNameE;
     private TextInputEditText textInputEditTextEmailE;
     private TextInputEditText textInputEditTextGenderE;
     private TextInputEditText textInputEditTextHeightE;
+    private TextInputEditText textInputEditTextAgeE;
+
 
     private AppCompatButton appCompatButtonSaveChanges;
     private AppCompatButton appCompatButtonUpdatePicture;
@@ -100,6 +103,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
         textInputEditTextHeightE = (TextInputEditText) findViewById(R.id.textInputEditTextHeightE);
         textInputEditTextHeightE.setText(String.valueOf(patient.getHeight()));
+
+        textInputEditTextAgeE = (TextInputEditText) findViewById(R.id.textInputEditTextAgeE);
+        textInputEditTextAgeE.setText(String.valueOf(patient.getAge()));
 
         appCompatButtonSaveChanges = (AppCompatButton) findViewById(R.id.appCompatButtonSaveChanges);
         appCompatButtonUpdatePicture = (AppCompatButton) findViewById(R.id.appCompatButtonUpdatePicture);
@@ -186,6 +192,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         int height = Integer.parseInt(textInputEditTextHeightE.getText().toString().trim());
         patient.setHeight(height);
 
+        int age = Integer.parseInt(textInputEditTextAgeE.getText().toString().trim());
+        patient.setAge(age);
+
         if(PTPalDB.updatePatient(patient, patEmail))
         {
             Snackbar.make(nestedScrollViewE, getString(R.string.update_success), Snackbar.LENGTH_LONG).show();
@@ -204,6 +213,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         textInputEditTextEmailE.setText(patient.getEmail());
         textInputEditTextGenderE.setText(patient.getGender());
         textInputEditTextHeightE.setText(String.valueOf(patient.getHeight()));
+        textInputEditTextAgeE.setText(String.valueOf(patient.getAge()));
     }
 
     public static byte[] getBytes(Bitmap bitmap) {

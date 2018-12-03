@@ -128,7 +128,7 @@ public class TherapyActivity extends AppCompatActivity implements View.OnClickLi
         therapy.setTherapistEmail(textInputEditTextTherapist.getText().toString().trim());
         therapy.setPatientEmail(email);
         therapy.setExercise(mySpinner.getSelectedItem().toString());
-        int sd = Integer.parseInt(textInputEditTextSD.getText().toString().trim());
+        double sd = Double.parseDouble(textInputEditTextSD.getText().toString().trim());
         therapy.setSessionDuration(sd);
 
         int spd = Integer.parseInt(textInputEditTextSPD.getText().toString().trim());
