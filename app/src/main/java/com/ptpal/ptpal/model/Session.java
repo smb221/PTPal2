@@ -6,7 +6,7 @@ public class Session
     private String exercise;
     private double duration;
     private int pronations;
-    private int overExtentions;
+    private int overExtensions;
     private int overExertions;
     private String createdDate;
 
@@ -42,14 +42,6 @@ public class Session
         this.pronations = pronations;
     }
 
-    public int getOverExtentions() {
-        return overExtentions;
-    }
-
-    public void setOverExtentions(int overExtentions) {
-        this.overExtentions = overExtentions;
-    }
-
     public int getOverExertions() {
         return overExertions;
     }
@@ -64,5 +56,13 @@ public class Session
 
     public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public int getOverExtensions() {
+        return overExtensions;
+    }
+
+    public void setOverExtensions(int overExtensions) {
+        this.overExtensions = overExtensions;
     }
 }

@@ -141,7 +141,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         {
             case R.id.appCompatButtonChangeExercise:
                 String[] exercises = myDB.getPatientTherapies(patEmail);
-                if(exercises[0] == null)
+                if(exercises.length == 0)
                 {
                     Snackbar.make(nestedScrollViewP, getString(R.string.first_create_therapy), Snackbar.LENGTH_LONG).show();
                 }

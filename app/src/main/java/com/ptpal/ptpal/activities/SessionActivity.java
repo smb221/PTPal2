@@ -705,7 +705,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
         session.setDuration(sessionTime);
         session.setPronations(pronations);
         session.setOverExertions(overExertions);
-        session.setOverExtentions(overExtentions);
+        session.setOverExtensions(overExtentions);
         Date now = new Date();
         String nowString = new SimpleDateFormat("yyyy-MM-dd").format(now);
         session.setCreatedDate(nowString);

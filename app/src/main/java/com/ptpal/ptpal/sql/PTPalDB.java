@@ -58,7 +58,7 @@ public class PTPalDB extends SQLiteOpenHelper
 
     public static final String TBL_SESSION = "Session";
     public static final String SESSION_ID = "Session_ID";
-    public static final String SESSION_PATIENT_EMAIL = "Patient_ID";
+    public static final String SESSION_PATIENT_EMAIL = "PatientEmail";
     public static final String SESSION_EXERCISE = "Exercise";
     public static final String SESSION_DURATION = "Duration";
     public static final String SESSION_OEXTENTIONS = "Over_Extensions";
@@ -82,7 +82,7 @@ public class PTPalDB extends SQLiteOpenHelper
 
     public PTPalDB(Context context)
     {
-        super(context, DATABASE_NAME, null, 8);
+        super(context, DATABASE_NAME, null, 10);
         this.db = db;
     }
 
@@ -125,7 +125,7 @@ public class PTPalDB extends SQLiteOpenHelper
                 THERAPY_ID + " INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT," +
                 THERAPY_THERAPIST_EMAIL + " String," +
                 THERAPY_PATIENT_EMAIL + " String," +
-                THERAPY_EXERCISE + " String UNIQUE," +
+                THERAPY_EXERCISE + " String ," +
                 THERAPY_DURATION + " DOUBLE," +
                 THERAPY_SPD + " INTEGER," +
                 THERAPY_DPW + " INTEGER," +
@@ -235,7 +235,7 @@ public class PTPalDB extends SQLiteOpenHelper
         values.put(SESSION_DURATION, session.getDuration());
         values.put(SESSION_PRONATIONS, session.getPronations());
         values.put(SESSION_OEXERTIONS, session.getOverExertions());
-        values.put(SESSION_OEXTENTIONS, session.getOverExtentions());
+        values.put(SESSION_OEXTENTIONS, session.getOverExtensions());
         values.put(SESSION_DATE, session.getCreatedDate());
         long result = db.insert(TBL_SESSION, null, values);
         if(result == -1)
@@ -402,6 +402,39 @@ public class PTPalDB extends SQLiteOpenHelper
         return ex;
     }
 
+    public ArrayList<Session> getSessions(String email)
+    {
+        ArrayList<Session> sl = new ArrayList<Session>();
+
+        db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Session WHERE patientEmail = ?", new String[]{email});
+        if (cursor != null) {
+            try
+            {
+                while(cursor.moveToNext())
+                {
+                    Session s = new Session();
+
+                    s.setPatientEmail(email);
+                    s.setExercise(cursor.getString(cursor.getColumnIndex("Exercise")));
+                    s.setDuration(cursor.getDouble(cursor.getColumnIndex("Duration")));
+                    s.setPronations(cursor.getInt(cursor.getColumnIndex("Pronations")));
+                    s.setOverExtensions(cursor.getInt(cursor.getColumnIndex("Over_Extensions")));
+                    s.setOverExertions(cursor.getInt(cursor.getColumnIndex("Over_Exertion")));
+                    s.setCreatedDate(cursor.getString(cursor.getColumnIndex("Session_Date")));
+                    sl.add(s);
+                }
+            }finally{
+                cursor.close();
+            }
+        }
+        cursor.close();
+
+        return sl;
+    }
+
+
+
     public boolean updatePatient(Patient patient, String email) {
 
         Boolean exists = checkEmail(patient.getEmail());
@@ -478,7 +511,6 @@ public class PTPalDB extends SQLiteOpenHelper
         db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(PP_DATA, pp.getData());
-        System.out.println("LOOK"+pp.getData() + pp.getPatientEmail());
         String where = "Patient_Email=?";
         String[] argument = new String[]{pp.getPatientEmail()};
         long result = db.update(TBL_PP, values, where, argument);
