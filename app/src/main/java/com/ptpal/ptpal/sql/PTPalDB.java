@@ -170,7 +170,7 @@ public class PTPalDB extends SQLiteOpenHelper
         values.put(PATIENT_GENDER, patient.getGender());
         values.put(PATIENT_PASSWORD, patient.getPassword());
         values.put(PATIENT_HEIGHT, patient.getHeight());
-        values.put(PATIENT_AGE, patient.getHeight());
+        values.put(PATIENT_AGE, patient.getAge());
         long result = db.insert(TBL_PATIENT, null, values);
         if(result == -1)
         {

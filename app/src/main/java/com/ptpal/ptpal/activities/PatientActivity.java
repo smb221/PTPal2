@@ -224,7 +224,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        popupWindow.showAtLocation(textViewEmail, Gravity.TOP,0,0);
+        popupWindow.showAtLocation(textViewEmail, Gravity.BOTTOM,0,0);
     }
 
    public void displayTherapy()
