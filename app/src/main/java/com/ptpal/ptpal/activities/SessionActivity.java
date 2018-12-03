@@ -456,4 +456,13 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
 
         workerThread.start();
     }
+    
+    void closeBT() throws IOException
+    {
+        stopWorker = true;
+        mmOutputStream.close();
+        mmInputStream.close();
+        mmSocket.close();
+        myLabel.setText("Bluetooth Closed");
+    }
 }
