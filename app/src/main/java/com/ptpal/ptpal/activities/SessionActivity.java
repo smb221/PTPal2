@@ -70,7 +70,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
 
     private Therapy therapy;
     private Patient patient;
-    private Session session;
+    private Session session = new Session();
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothDevice mmDevice;
@@ -381,11 +381,13 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
         switch (v.getId()) {
             case R.id.appCompatButtonStart:
                 startTimer();
-                findBT();
-                try {
-                    openBT();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                boolean open = findBT();
+                if(open = true) {
+                    try {
+                        openBT();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case R.id.appCompatButtonEnd:
@@ -403,15 +405,16 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    public void findBT()
+    public boolean findBT()
     {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null)
         {
             Snackbar.make(nestedScrollViewS, getString(R.string.failed_find_bt), Snackbar.LENGTH_LONG).show();
+            return false;
         }
 
-        if(!mBluetoothAdapter.isEnabled())
+        else if(!mBluetoothAdapter.isEnabled())
         {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetooth, 0);
@@ -430,6 +433,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
         Snackbar.make(nestedScrollViewS, getString(R.string.success_find_bt), Snackbar.LENGTH_LONG).show();
+        return true;
     }
 
     void openBT() throws IOException
@@ -488,139 +492,145 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                 if(test == 10)
                                                 {
                                                     //Log.d("myTag", out);
-
-                                                    String values[] = out.split(":");
-
-                                                    accelX = Double.parseDouble(values[0]);
-                                                    accelY = Double.parseDouble(values[1]);
-                                                    accelZ = Double.parseDouble(values[2]);
-                                                    distance = Double.parseDouble(values[3]);
-                                                    realAccelMag = Double.parseDouble(values[4]);
-                                                    initAccelX = Double.parseDouble(values[5]);
-                                                    initAccelY = Double.parseDouble(values[6]);
-                                                    initAccelZ = Double.parseDouble(values[7]);
-                                                    initAccelMag = Double.parseDouble(values[8]);
-                                                    initDist = Double.parseDouble(values[9]);
-
-                                                    test = 0;
-                                                    out = "";
-                                                    if(patient.getHeight() > 0)
+                                                    if(out != null)
                                                     {
-                                                        heightM = Math.round((patient.getHeight()*2.54/100)*100)/100;
-
-                                                        if(patient.getGender().equals("M"))
+                                                        if(out.charAt(0) == 'n')
                                                         {
-                                                            if(patient.getAge() < 65)
+                                                            out = out.substring(4);
+                                                        }
+                                                        String values[] = out.split(":");
+
+                                                        accelX = Double.parseDouble(values[0]);
+                                                        accelY = Double.parseDouble(values[1]);
+                                                        accelZ = Double.parseDouble(values[2]);
+                                                        distance = Double.parseDouble(values[3]);
+                                                        realAccelMag = Double.parseDouble(values[4]);
+                                                        initAccelX = Double.parseDouble(values[5]);
+                                                        initAccelY = Double.parseDouble(values[6]);
+                                                        initAccelZ = Double.parseDouble(values[7]);
+                                                        initAccelMag = Double.parseDouble(values[8]);
+                                                        initDist = Double.parseDouble(values[9]);
+
+                                                        test = 0;
+                                                        out = "";
+                                                        if(patient.getHeight() > 0)
+                                                        {
+                                                            heightM = Math.round((patient.getHeight()*2.54/100)*100)/100;
+
+                                                            if(patient.getGender().equals("M"))
                                                             {
-                                                                if(heightM <= 1.94 && heightM >= 1.46)
+                                                                if(patient.getAge() < 65)
                                                                 {
-                                                                     ulnaCm = menYounger.get(heightM);
+                                                                    if(heightM <= 1.94 && heightM >= 1.46)
+                                                                    {
+                                                                         ulnaCm = menYounger.get(heightM);
+                                                                    }
+                                                                    else if(heightM > 1.94)
+                                                                    {
+                                                                        ulnaCm = 33.0;
+                                                                    }
+                                                                    else if(heightM < 1.46)
+                                                                    {
+                                                                        ulnaCm = 18.0;
+                                                                    }
                                                                 }
-                                                                else if(heightM > 1.94)
+                                                                else
                                                                 {
-                                                                    ulnaCm = 33.0;
-                                                                }
-                                                                else if(heightM < 1.46)
-                                                                {
-                                                                    ulnaCm = 18.0;
+                                                                    if(heightM <= 1.87 && heightM >= 1.45)
+                                                                    {
+                                                                        ulnaCm = menOlder.get(heightM);
+                                                                    }
+                                                                    else if(heightM > 1.87)
+                                                                    {
+                                                                        ulnaCm = 32.5;
+                                                                    }
+                                                                    else if(heightM < 1.45)
+                                                                    {
+                                                                        ulnaCm = 18.0;
+                                                                    }
                                                                 }
                                                             }
-                                                            else
+                                                            else if(patient.getGender().equals("F"))
                                                             {
-                                                                if(heightM <= 1.87 && heightM >= 1.45)
+                                                                if(patient.getAge() < 65)
                                                                 {
-                                                                    ulnaCm = menOlder.get(heightM);
+                                                                    if(heightM <= 1.84 && heightM >= 1.47)
+                                                                    {
+                                                                        ulnaCm = womenYounger.get(heightM);
+                                                                    }
+                                                                    else if(heightM > 1.84)
+                                                                    {
+                                                                        ulnaCm = 32.5;
+                                                                    }
+                                                                    else if(heightM < 1.47)
+                                                                    {
+                                                                        ulnaCm = 18.0;
+                                                                    }
                                                                 }
-                                                                else if(heightM > 1.87)
+                                                                else
                                                                 {
-                                                                    ulnaCm = 32.5;
-                                                                }
-                                                                else if(heightM < 1.45)
-                                                                {
-                                                                    ulnaCm = 18.0;
+                                                                    if(heightM <= 1.84 && heightM >= 1.40)
+                                                                    {
+                                                                        ulnaCm = womenOlder.get(heightM);
+                                                                    }
+                                                                    else if(heightM > 1.84)
+                                                                    {
+                                                                        ulnaCm = 32.5;
+                                                                    }
+                                                                    else if(heightM < 1.40)
+                                                                    {
+                                                                        ulnaCm = 18.0;
+                                                                    }
                                                                 }
                                                             }
                                                         }
-                                                        else if(patient.getGender().equals("F"))
+
+                                                        if(Math.abs(realAccelMag) > (Math.abs(initAccelMag) + 1));
                                                         {
-                                                            if(patient.getAge() < 65)
+                                                            overExertions++;
+                                                        }
+                                                        if(Math.abs(accelY) > (Math.abs(initAccelY) + .5))
+                                                        {
+                                                            pronations++;
+                                                        }
+
+                                                        if(patExercise.equals("Horizontal Arm Extension"))
+                                                        {
+                                                            if(distance < initDist-40)
                                                             {
-                                                                if(heightM <= 1.84 && heightM >= 1.47)
-                                                                {
-                                                                    ulnaCm = womenYounger.get(heightM);
-                                                                }
-                                                                else if(heightM > 1.84)
-                                                                {
-                                                                    ulnaCm = 32.5;
-                                                                }
-                                                                else if(heightM < 1.47)
-                                                                {
-                                                                    ulnaCm = 18.0;
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                if(heightM <= 1.84 && heightM >= 1.40)
-                                                                {
-                                                                    ulnaCm = womenOlder.get(heightM);
-                                                                }
-                                                                else if(heightM > 1.84)
-                                                                {
-                                                                    ulnaCm = 32.5;
-                                                                }
-                                                                else if(heightM < 1.40)
-                                                                {
-                                                                    ulnaCm = 18.0;
-                                                                }
+                                                                overExtentions++;
                                                             }
                                                         }
-                                                    }
-
-                                                    if(Math.abs(realAccelMag) > (Math.abs(initAccelMag) + 1));
-                                                    {
-                                                        overExertions++;
-                                                    }
-                                                    if(Math.abs(accelY) > (Math.abs(initAccelY) + .5))
-                                                    {
-                                                        pronations++;
-                                                    }
-
-                                                    if(patExercise.equals("Horizontal Arm Extension"))
-                                                    {
-                                                        if(distance < initDist-40)
+                                                        else if(patExercise.equals("Vertical Arm Extension"))
                                                         {
-                                                            overExtentions++;
-                                                        }
-                                                    }
-                                                    else if(patExercise.equals("Vertical Arm Extension"))
-                                                    {
-                                                       if(distance < initDist + ulnaCm - 40)
-                                                       {
-                                                           overExtentions++;
-                                                           try {
-                                                               sendData();
-                                                           } catch (IOException e) {
-                                                               e.printStackTrace();
+                                                           if(distance < initDist + ulnaCm - 40)
+                                                           {
+                                                               overExtentions++;
+                                                               try {
+                                                                   sendData();
+                                                               } catch (IOException e) {
+                                                                   e.printStackTrace();
+                                                               }
                                                            }
-                                                       }
-                                                    }
+                                                        }
 
-                                                    textViewAccelX.setVisibility(View.VISIBLE);
-                                                    textViewAccelX.setText("X Acceleration: " + String.valueOf(accelX));
-                                                    textViewAccelY.setVisibility(View.VISIBLE);
-                                                    textViewAccelY.setText("Y Acceleration: " + String.valueOf(accelY));
-                                                    textViewAccelZ.setVisibility(View.VISIBLE);
-                                                    textViewAccelZ.setText("Z Acceleration: " + String.valueOf(accelZ));
-                                                    textViewDistance.setVisibility(View.VISIBLE);
-                                                    textViewDistance.setText("Distane: " + String.valueOf(distance));
-                                                    textViewMagnitude.setVisibility(View.VISIBLE);
-                                                    textViewMagnitude.setText("Magnitude: " + String.valueOf(realAccelMag));
-                                                    textViewSessionOverExertions.setVisibility(View.VISIBLE);
-                                                    textViewSessionOverExertions.setText("Over Exertions: " + String.valueOf(overExertions));
-                                                    textViewSessionOverExtensions.setVisibility(View.VISIBLE);
-                                                    textViewSessionOverExtensions.setText("Over Extentions: " + String.valueOf(overExtentions));
-                                                    textViewSessionPronations.setVisibility(View.VISIBLE);
-                                                    textViewSessionPronations.setText("Pronations: " + String.valueOf(pronations));
+                                                        textViewAccelX.setVisibility(View.VISIBLE);
+                                                        textViewAccelX.setText("X Acceleration: " + String.valueOf(accelX));
+                                                        textViewAccelY.setVisibility(View.VISIBLE);
+                                                        textViewAccelY.setText("Y Acceleration: " + String.valueOf(accelY));
+                                                        textViewAccelZ.setVisibility(View.VISIBLE);
+                                                        textViewAccelZ.setText("Z Acceleration: " + String.valueOf(accelZ));
+                                                        textViewDistance.setVisibility(View.VISIBLE);
+                                                        textViewDistance.setText("Distane: " + String.valueOf(distance));
+                                                        textViewMagnitude.setVisibility(View.VISIBLE);
+                                                        textViewMagnitude.setText("Magnitude: " + String.valueOf(realAccelMag));
+                                                        textViewSessionOverExertions.setVisibility(View.VISIBLE);
+                                                        textViewSessionOverExertions.setText("Over Exertions: " + String.valueOf(overExertions));
+                                                        textViewSessionOverExtensions.setVisibility(View.VISIBLE);
+                                                        textViewSessionOverExtensions.setText("Over Extentions: " + String.valueOf(overExtentions));
+                                                        textViewSessionPronations.setVisibility(View.VISIBLE);
+                                                        textViewSessionPronations.setText("Pronations: " + String.valueOf(pronations));
+                                                    }
                                                 }
                                             }
                                         }

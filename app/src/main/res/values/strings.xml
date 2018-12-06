@@ -7,7 +7,7 @@
     <string name="text_login">Login!</string>
     <string name="text_not_user">Sign Up!</string>
     <string name="hint_lastName">Last Name</string>
-    <string name="hint_height">Height</string>
+    <string name="hint_height">Height (inches)</string>
     <string name="hint_gender">Gender</string>
     <string name="hint_confirm_password">Confirm Password</string>
     <string name="text_register">Register</string>
@@ -53,6 +53,7 @@
     <string name="close_bt">BT Connection Closed</string>
     <string name="select_exercise_first">You must select an exercise before you can start a session!</string>
     <string name="first_create_therapy">You must add therapy before you can select an exercise!</string>
+    <string name="must_complete_session">You must complete a Session before you can view your Session History!</string>
     <string-array name = "exercises">
         <item>Vertical Arm Extension</item>
         <item>Horizontal Arm Extension</item>

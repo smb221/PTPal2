@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.ptpal.ptpal.R;
 import com.ptpal.ptpal.model.Patient;
 import com.ptpal.ptpal.model.ProfilePicture;
+import com.ptpal.ptpal.model.Session;
 import com.ptpal.ptpal.model.Therapy;
 import com.ptpal.ptpal.sql.PTPalDB;
 
@@ -61,6 +62,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
     private Patient patient;
     private Therapy therapy;
     private ProfilePicture profPic;
+    private ArrayList<Session> sessions;
 
     private String patEmail;
     private Spinner skySpinner;
@@ -83,6 +85,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         myDB = new PTPalDB(activity);
         patient = myDB.getPatient(patEmail);
         profPic = myDB.getPP(patEmail);
+        sessions = myDB.getSessions(patEmail);
     }
     private void initViews() {
         nestedScrollViewP = (NestedScrollView) findViewById(R.id.nestedScrollViewP);
@@ -132,6 +135,7 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
         textViewLinkLogout.setOnClickListener(this);
         textViewLinkEditProfile.setOnClickListener(this);
         textViewLinkCreateTherapy.setOnClickListener(this);
+        appCompatButtonTherapyHistory.setOnClickListener(this);
     }
 
     @Override
@@ -176,6 +180,17 @@ public class PatientActivity extends AppCompatActivity implements View.OnClickLi
                     extras.putString("EXERCISE", therapy.getExercise());
                     intentSession.putExtras(extras);
                     startActivity(intentSession);
+                }
+                break;
+            case R.id.appCompatButtonTherapyHistory:
+                if(sessions.size() == 0)
+                {
+                    Snackbar.make(nestedScrollViewP, getString(R.string.must_complete_session), Snackbar.LENGTH_LONG).show();
+                }
+                else{
+                    Intent intentHistory = new Intent(getApplicationContext(), TherapyHistoryActivity.class);
+                    intentHistory.putExtra("EMAIL", patient.getEmail());
+                    startActivity(intentHistory);
                 }
                 break;
         }
