@@ -370,6 +370,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
 
         appCompatTextViewSessToPat = (AppCompatTextView) findViewById(R.id.appCompatTextViewSessToPat);
     }
+
     private void initListeners(){
         appCompatButtonStart.setOnClickListener(this);
         appCompatButtonEnd.setOnClickListener(this);
@@ -438,15 +439,36 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
 
     void openBT() throws IOException
     {
+        Log.i("myInfo", "1. Got here fam");
+
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
+
+        Log.i("myInfo", "2. Got here fam");
+
         mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+
+        Log.i("myInfo", "3. Got here fam");
+
         mmSocket.connect();
+
+        Log.i("myInfo", "4. Got here fam");
+
         mmOutputStream = mmSocket.getOutputStream();
+
+        Log.i("myInfo", "5. Got here fam");
+
         mmInputStream = mmSocket.getInputStream();
+
+        Log.i("myInfo", "6. Got here fam");
 
         beginListenForData();
 
+        Log.i("myInfo", "7. Got here fam");
+
         Snackbar.make(nestedScrollViewS, getString(R.string.open_bt), Snackbar.LENGTH_LONG).show();
+
+        Log.i("myInfo", "NOW here fam");
+
     }
 
     void beginListenForData()
@@ -491,13 +513,15 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                 test++;
                                                 if(test == 10)
                                                 {
-                                                    //Log.d("myTag", out);
+                                                    Log.d("myTag", "Out = " +  out);
+
                                                     if(out != null)
                                                     {
                                                         if(out.charAt(0) == 'n')
                                                         {
                                                             out = out.substring(4);
                                                         }
+
                                                         String values[] = out.split(":");
 
                                                         accelX = Double.parseDouble(values[0]);
@@ -523,7 +547,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                                 {
                                                                     if(heightM <= 1.94 && heightM >= 1.46)
                                                                     {
-                                                                         ulnaCm = menYounger.get(heightM);
+                                                                        ulnaCm = menYounger.get(heightM);
                                                                     }
                                                                     else if(heightM > 1.94)
                                                                     {
@@ -589,7 +613,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                         {
                                                             overExertions++;
                                                         }
-                                                        if(Math.abs(accelY) > (Math.abs(initAccelY) + .5))
+                                                        if(Math.abs(accelY) > (Math.abs(initAccelY) + .3))
                                                         {
                                                             pronations++;
                                                         }
@@ -603,15 +627,15 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                         }
                                                         else if(patExercise.equals("Vertical Arm Extension"))
                                                         {
-                                                           if(distance < initDist + ulnaCm - 40)
-                                                           {
-                                                               overExtentions++;
-                                                               try {
-                                                                   sendData();
-                                                               } catch (IOException e) {
-                                                                   e.printStackTrace();
-                                                               }
-                                                           }
+                                                            if(distance < initDist + ulnaCm - 40)
+                                                            {
+                                                                overExtentions++;
+                                                                try {
+                                                                    sendData();
+                                                                } catch (IOException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
                                                         }
 
                                                         textViewAccelX.setVisibility(View.VISIBLE);
@@ -621,7 +645,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                         textViewAccelZ.setVisibility(View.VISIBLE);
                                                         textViewAccelZ.setText("Z Acceleration: " + String.valueOf(accelZ));
                                                         textViewDistance.setVisibility(View.VISIBLE);
-                                                        textViewDistance.setText("Distane: " + String.valueOf(distance));
+                                                        textViewDistance.setText("Distance: \n" + String.valueOf(distance));
                                                         textViewMagnitude.setVisibility(View.VISIBLE);
                                                         textViewMagnitude.setText("Magnitude: " + String.valueOf(realAccelMag));
                                                         textViewSessionOverExertions.setVisibility(View.VISIBLE);
@@ -630,6 +654,7 @@ public class SessionActivity extends AppCompatActivity implements View.OnClickLi
                                                         textViewSessionOverExtensions.setText("Over Extentions: " + String.valueOf(overExtentions));
                                                         textViewSessionPronations.setVisibility(View.VISIBLE);
                                                         textViewSessionPronations.setText("Pronations: " + String.valueOf(pronations));
+
                                                     }
                                                 }
                                             }
